@@ -1,6 +1,11 @@
-{% extends 'layout.hmtl' %}
+{% extends 'layout.html' %}
 
 {% block body%}
- <h1>{{id}}</h1>
+    {% for article in articles%}
+      {% if article.id == '{{id}}}' %}
+       <h1>{{article.title}} {{id}}</h1>
+      {% endif %} 
+    {% endfor %}
+ 
 {% endblock%}
 
