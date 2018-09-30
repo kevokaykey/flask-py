@@ -1,11 +1,9 @@
 {% extends 'layout.html' %}
 
 {% block body%}
-    {% for article in articles%}
-      {% if article.id == '{{id}}}' %}
-       <h1>{{article.title}} {{id}}</h1>
-      {% endif %} 
-    {% endfor %}
+    
+       <h1> {{id}}</h1>
+    
  
 {% endblock%}
 
