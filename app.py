@@ -95,22 +95,18 @@ def login():
 
 
         #get user by username
-        result = cur.execute("SELECT * FROM users WHERE username = %s", [username])
+        data= cur.execute("SELECT * FROM users WHERE username = %s", [username])
+        data = cur.fetchone()[3]
         
-
-        if result > 0:
-            #get stored hash
-            data = cur.fetchone()
-            password = data['password']
-
             #compare passwords
-            if sha256_crypt.verify(password_candidate,password):
-                app.logger.info('PASSWORD MATCHED')
-            else:
-                app.logger.info('PASSWORD NOT MATCHED')    
-
+        if sha256_crypt.verify(password_candidate,data):
+            session['logged_in'] = True
+            session['username'] = username
+            app.logger.info('PASSWORD MATCHED')
         else:
-            app.logger.info('NO USER')        
+            app.logger.info('Invalid credentials')    
+
+             
 
 
     return render_template('login.html')    
