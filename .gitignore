@@ -1,2 +1,2 @@
-*.vscode
-*__pycache__
+dir_to_ignore/__pycache__
+dir_to_ignore/.vscode
