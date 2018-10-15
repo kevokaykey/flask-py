@@ -2,7 +2,13 @@
 
 {% block body%}
     
-       <h1> {{id}}</h1>
+       <h1> {{ articles[1] }}</h1>
+       <small>Written by {{ articles[3] }} on {{ articles[4] }}</small>
+      
+       <hr>
+       <div>
+           {{ articles[2] | safe }}
+       </div>
     
  
 {% endblock%}

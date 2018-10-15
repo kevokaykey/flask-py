@@ -6,6 +6,7 @@ import mysql.connector
 from mysql.connector import errorcode
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt 
+from functools import wraps
 
 app = Flask(__name__)
 app.debug = True
@@ -23,19 +24,38 @@ connection =mysql.connector.connect(user='root',password= '',host= '127.0.0.1',d
 #init MQSQL
 #mysql = MySQL(app)
 
-Articles = Articles()
+#Articles = Articles()
 
 @app.route('/')
 def index():
-       return "index"
+       return render_template('home.html')
 
 @app.route('/articles')
 def articles():
-       return render_template('articles.html', articles = Articles )
+       
+    #creare cursor
+    cur = connection.cursor()
+    #get articles
+    cur.execute("SELECT * FROM articles")
+    articles = cur.fetchall()
+    #print(articles)
+    return render_template('articles.html', articles = articles)
+    
+
+    
+
+    #close connection
+    cur.close()    
 
 @app.route('/article/<string:id>/')
 def article(id):
-       return render_template('article.html', id = id)
+    #creare cursor
+    cur = connection.cursor()
+    #get articles
+    cur.execute("SELECT * FROM articles where id = %s",[id])
+    articles = cur.fetchone()
+    
+    return render_template('article.html', articles = articles)
 
 
 class RegisterForm(Form):
@@ -102,14 +122,103 @@ def login():
         if sha256_crypt.verify(password_candidate,data):
             session['logged_in'] = True
             session['username'] = username
-            app.logger.info('PASSWORD MATCHED')
+
+            flash('You are now logged in', 'success')
+            return redirect(url_for('dashboard'))
         else:
-            app.logger.info('Invalid credentials')    
+            error = 'Invalid logins'   
+            return render_template('login.html', error=error) 
 
              
 
 
-    return render_template('login.html')    
+    return render_template('login.html') 
+
+#check if user logged in
+def is_logged_in(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash('Unauthorised, Please login','danger')
+            return redirect(url_for('login'))   
+    return wrap     
+
+
+#logout
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("You are now logged out", 'success')
+    return redirect(url_for('login'))
+
+
+#dashboard
+@app.route('/dashboard')
+@is_logged_in
+def dashboard():
+    #creare cursor
+    cur = connection.cursor()
+
+    #get articles
+    cur.execute("SELECT * FROM articles")
+    articles = cur.fetchall()
+    results = cur.rowcount
+
+    if results > 0:
+        #print(articles)
+        return render_template('dashboard.html', articles = articles)
+    else:
+        msg = "No articles found"    
+        return render_template('dashboard.html', msg = msg)
+
+
+    
+    
+    
+
+    
+
+    #close connection
+    cur.close()    
+
+
+    
+
+#Article form class
+class ArticleForm(Form):
+    title = StringField('Title', [validators.length(min=1, max=200)])
+    body = TextAreaField('Body', [validators.length(min=30)])
+    
+#add article route
+@app.route('/add_article', methods=['POST', 'GET']) 
+@is_logged_in   
+def add_articles():
+    form = ArticleForm(request.form)
+    if request.method == 'POST' and form.validate:
+        title = form.title.data
+        body = form.body.data
+
+
+        #create cursor
+        cur = connection.cursor()
+
+        #execute
+        cur.execute("INSERT INTO articles(title,body,author) VALUES(%s,%s,%s)",(title,body,session['username']))
+
+        #commit to database
+        connection.commit()
+
+        #close connection
+        cur.close()
+
+        flash("Articles created", 'success')
+
+        return redirect(url_for('dashboard'))
+
+    return render_template('add_article.html', form = form)    
+
 
 
 if __name__== '__main__':
