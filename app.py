@@ -217,7 +217,76 @@ def add_articles():
 
         return redirect(url_for('dashboard'))
 
-    return render_template('add_article.html', form = form)    
+    return render_template('add_article.html', form = form)  
+
+
+
+#Edit article route
+@app.route('/edit_article/<string:id>', methods=['POST', 'GET']) 
+@is_logged_in   
+def edit_articles(id):
+
+
+      #get form
+      form = ArticleForm(request.form)
+
+      #create cursor
+      cur = connection.cursor()
+
+      result = cur.execute("SELECT * FROM articles WHERE id = %s" , [id]) 
+      article = cur.fetchone() 
+
+     
+
+      #populate article form fields
+      form.title.data = article[1]
+      form.body.data = article[2]
+    
+      if request.method == 'POST' and form.validate:
+            title = request.form['title']
+            body = request.form['body']
+
+
+            #create cursor
+            cur = connection.cursor()
+
+            #execute
+            cur.execute("UPDATE articles SET title = %s, body = %s WHERE id = %s", (title,body,id))
+
+            #commit to database
+            connection.commit()
+
+            #close connection
+            cur.close()
+
+            flash("Articles Updated", 'success')
+
+            return redirect(url_for('dashboard'))
+
+      return render_template('edit_article.html', form = form) 
+
+
+  #Delete article
+@app.route("/delete_article/<string:id>", methods=['POST'])
+@is_logged_in
+def delete_article(id):
+
+      #create cursor
+      cur = connection.cursor()
+
+      #execute
+      cur.execute("DELETE FROM articles WHERE id = %s", [id])
+
+      connection.commit()
+
+            #close connection
+      cur.close()
+
+      flash("Articles Deleted", 'success')
+
+      return redirect(url_for('dashboard'))
+
+  
 
 
 
