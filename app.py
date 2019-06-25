@@ -1,15 +1,31 @@
 from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
-from data import Articles
-from flaskext.mysql import MySQL
+#from data import Articles
+#from flaskext.mysql import MySQL
 #from flask_mysqldb import MySQL
 import mysql.connector
 from mysql.connector import errorcode
 from wtforms import Form, StringField, TextAreaField, PasswordField, validators
 from passlib.hash import sha256_crypt 
 from functools import wraps
+import psycopg2
+import os
+
+
 
 app = Flask(__name__)
-app.debug = True
+if app.config["ENV"] == "production":
+    app.config.from_object("config.Production")
+elif app.config["ENV"] == "testing":
+    app.config.from_object("config.Testing")
+else:
+    app.config.from_object("config.Development")
+
+
+
+
+
+
+
 
 #config MysSQl
 #app.config['MYSQL_DATABASE_HOST'] = 'localhost'
@@ -18,8 +34,12 @@ app.debug = True
 #app.config['MYSQL_DATABASE_DB'] = 'flaskapp'
 #app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
+#mysql connection
+#connection =mysql.connector.connect(user='root',password= '',host= '127.0.0.1',database= 'flaskapp')
 
-connection =mysql.connector.connect(user='root',password= '',host= '127.0.0.1',database= 'flaskapp')
+#postgress connection
+connection =psycopg2.connect(user='postgres',password= '28248477',host= '127.0.0.1',database= 'flaskdb')
+
 
 #init MQSQL
 #mysql = MySQL(app)
@@ -86,7 +106,7 @@ def register():
         
 
         #execute query
-        cur.execute("INSERT INTO users(name,email,username,password) VALUES(%s, %s, %s, %s)", (name,email,username,password))
+        cur.execute("INSERT INTO users(name,email,username,password) VALUES(%s, %s, %s, %s)", (name,email,username,password));
 
         #commit to DB
         connection.commit()
