@@ -38,7 +38,7 @@ else:
 #connection =mysql.connector.connect(user='root',password= '',host= '127.0.0.1',database= 'flaskapp')
 
 #postgress connection
-connection =psycopg2.connect(user='rfmkwvcfumreqf',password= '28248477',host= 'ec2-174-129-227-128.compute-1.amazonaws.com', 
+connection =psycopg2.connect(user='rfmkwvcfumreqf',password= '8e71f7cc2f00e02739616de00ddc69132fa72d75e82cd2c94185befe81ef433f',host= 'ec2-174-129-227-128.compute-1.amazonaws.com', 
 database= 'd3gacb20iaqb6g', port='5432')
 
 
