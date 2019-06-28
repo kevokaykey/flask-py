@@ -38,7 +38,8 @@ else:
 #connection =mysql.connector.connect(user='root',password= '',host= '127.0.0.1',database= 'flaskapp')
 
 #postgress connection
-connection =psycopg2.connect(user='postgres',password= '28248477',host= '127.0.0.1',database= 'flaskdb')
+connection =psycopg2.connect(user='rfmkwvcfumreqf',password= '28248477',host= 'ec2-174-129-227-128.compute-1.amazonaws.com', 
+database= 'd3gacb20iaqb6g', port='5432')
 
 
 #init MQSQL
