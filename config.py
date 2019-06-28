@@ -29,5 +29,6 @@ class Production(Base):
     """Configurations for Production."""
     DEBUG = False
     TESTING = False
+    SECRET_KEY = 'secretkey123'
 
 
