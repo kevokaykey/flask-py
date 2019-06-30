@@ -9,6 +9,7 @@ from passlib.hash import sha256_crypt
 from functools import wraps
 import psycopg2
 import os
+from flask import Blueprint
 
 
 
@@ -38,8 +39,8 @@ else:
 #connection =mysql.connector.connect(user='root',password= '',host= '127.0.0.1',database= 'flaskapp')
 
 #postgress connection
-connection =psycopg2.connect(user='rfmkwvcfumreqf',password= '8e71f7cc2f00e02739616de00ddc69132fa72d75e82cd2c94185befe81ef433f',host= 'ec2-174-129-227-128.compute-1.amazonaws.com', 
-database= 'd3gacb20iaqb6g', port='5432')
+connection =psycopg2.connect(user='postgres',password= '28248477',host= '127.0.0.1', 
+database= 'flaskdb' )
 
 
 #init MQSQL
@@ -47,11 +48,13 @@ database= 'd3gacb20iaqb6g', port='5432')
 
 #Articles = Articles()
 
-@app.route('/')
+mod = Blueprint('all',__name__)  
+
+@mod.route('/')
 def index():
        return render_template('home.html')
 
-@app.route('/articles')
+@mod.route('/articles')
 def articles():
        
     #creare cursor
@@ -68,7 +71,7 @@ def articles():
     #close connection
     cur.close()    
 
-@app.route('/article/<string:id>/')
+@mod.route('/article/<string:id>/')
 def article(id):
     #creare cursor
     cur = connection.cursor()
@@ -89,7 +92,7 @@ class RegisterForm(Form):
     ])
     confirm = PasswordField('Confirm Password')
 
-@app.route('/register', methods=['GET','POST'])
+@mod.route('/register', methods=['GET','POST'])
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -123,7 +126,7 @@ def register():
     return render_template('register.html', form = form) 
 
 #User Login
-@app.route('/login', methods=['GET','POST'])
+@mod.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
         #get form fields
@@ -168,7 +171,7 @@ def is_logged_in(f):
 
 
 #logout
-@app.route('/logout')
+@mod.route('/logout')
 def logout():
     session.clear()
     flash("You are now logged out", 'success')
@@ -176,7 +179,7 @@ def logout():
 
 
 #dashboard
-@app.route('/dashboard')
+@mod.route('/dashboard')
 @is_logged_in
 def dashboard():
     #creare cursor
@@ -213,7 +216,7 @@ class ArticleForm(Form):
     body = TextAreaField('Body', [validators.length(min=30)])
     
 #add article route
-@app.route('/add_article', methods=['POST', 'GET']) 
+@mod.route('/add_article', methods=['POST', 'GET']) 
 @is_logged_in   
 def add_articles():
     form = ArticleForm(request.form)
@@ -243,7 +246,7 @@ def add_articles():
 
 
 #Edit article route
-@app.route('/edit_article/<string:id>', methods=['POST', 'GET']) 
+@mod.route('/edit_article/<string:id>', methods=['POST', 'GET']) 
 @is_logged_in   
 def edit_articles(id):
 
@@ -288,7 +291,7 @@ def edit_articles(id):
 
 
   #Delete article
-@app.route("/delete_article/<string:id>", methods=['POST'])
+@mod.route("/delete_article/<string:id>", methods=['POST'])
 @is_logged_in
 def delete_article(id):
 
@@ -308,12 +311,3 @@ def delete_article(id):
       return redirect(url_for('dashboard'))
 
   
-
-
-
-if __name__== '__main__':
-   # app.secret_key="secretkey123"
-    app.run()
-
-
-
