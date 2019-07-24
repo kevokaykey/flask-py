@@ -7,9 +7,9 @@ class Base(object):
     DEBUG = False
     CSRF_ENABLED = True
     SECRET = os.getenv('SECRET')
-    USER = os.getenv('USER')
-    PASSWORD = os.getenv('PASSWORD')
-    HOST = os.getenv('localhost')
+    USER = postgres
+    PASSWORD = 28248477
+    HOST = 127.0.0.1
 
 
 class Development(Base):

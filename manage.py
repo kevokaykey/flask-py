@@ -1,7 +1,8 @@
 from flask_script import Manager
+from flask import Flask
 
 #local import
-from database import Database
+from database.database import Database
 
 #create databse instance
 db = Database()
@@ -20,7 +21,7 @@ def drop_db():
     db.drop_table()    
 
 
-if __name__ == '__main__'
-manager.run()
+if __name__ == '__main__':
+  manager.run()
 
 

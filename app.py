@@ -39,7 +39,7 @@ else:
 #connection =mysql.connector.connect(user='root',password= '',host= '127.0.0.1',database= 'flaskapp')
 
 #postgress connection
-connection =psycopg2.connect(user='postgres',password= '28248477',host= '127.0.0.1', 
+connection = psycopg2.connect(user='postgres',password= '28248477',host= '127.0.0.1', 
 database= 'flaskdb' )
 
 
